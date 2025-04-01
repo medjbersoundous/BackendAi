@@ -45,22 +45,26 @@ export const registerAthlete = async (req, res) => {
 
 
 export const loginAthlete = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const athlete = await Athlete.findOne({ email });
-        if (!athlete) {
-            return res.status(404).json({ message: 'Athlete not found' });
-        }
-        const isMatch = await bcrypt.compare(password, athlete.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
-        const token = generateToken(athlete._id);
+  try {
+      const { email, password } = req.body;
+      const athlete = await Athlete.findOne({ email });
+      if (!athlete) {
+          return res.status(404).json({ message: 'Athlete not found' });
+      }
+      if (!athlete.verified) {
+          return res.status(403).json({ message: 'Please verify your account first' });
+      }
 
-        res.json({ message: 'Login successful', token, athleteId: athlete.athleteId });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
+      const isMatch = await bcrypt.compare(password, athlete.password);
+      if (!isMatch) {
+          return res.status(401).json({ message: 'Invalid credentials' });
+      }
+      
+      const token = generateToken(athlete._id);
+      res.json({ message: 'Login successful', token, athleteId: athlete.athleteId });
+  } catch (error) {
+      res.status(500).json({ message: 'Server error', error: error.message });
+  }
 };
 export const getAthleteInfo = async (req, res) => {
     try {
