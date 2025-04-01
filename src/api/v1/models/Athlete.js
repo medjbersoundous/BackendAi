@@ -10,6 +10,8 @@ const athleteSchema = new mongoose.Schema({
     heightCm: { type: Number, required: true },
     weightKg: { type: Number, required: true },
     position: { type: String, required: true },
+    verificationToken: { type: String },
+    verified: { type: Boolean, default: false }, 
 }, { timestamps: true });
 
 const Athlete = mongoose.model('Athlete', athleteSchema);
